@@ -2,10 +2,14 @@ services:
   - type: web
     name: koracart-api
     runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
     rootDir: backend
     buildCommand: bash build.sh
     startCommand: gunicorn config.wsgi:application
     healthCheckPath: /api/health/
+    autoDeployTrigger: checksPass
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.8"
@@ -14,6 +18,8 @@ services:
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
+        sync: false
+      - key: MIGRATION_DATABASE_URL
         sync: false
       - key: DJANGO_ALLOWED_HOSTS
         sync: false
