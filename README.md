@@ -26,36 +26,19 @@ Marketplace features (authentication, vendor onboarding, catalogue, cart, checko
 
 The project is designed for cloud deployment. You do not need to run the application locally to deploy it. GitHub pushes trigger the configured CI/CD workflows.
 
-## Repository structure
-
-```text
-koracart/
-├── .github/workflows/
-├── backend/
-│   ├── apps/core/
-│   ├── config/
-│   ├── manage.py
-│   ├── build.sh
-│   └── requirements.txt
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   ├── package.json
-│   └── ...
-├── .gitignore
-└── README.md
-```
-
 ## Required environment variables
 
 ### Backend
 
-See `backend/.env.example`. At minimum configure:
+See `backend/.env.example`. Configure the following in Render:
 - `DJANGO_SECRET_KEY`
-- `DJANGO_DEBUG`
+- `DJANGO_DEBUG=False`
 - `DJANGO_ALLOWED_HOSTS`
 - `DATABASE_URL`
 - `CORS_ALLOWED_ORIGINS`
+- `CSRF_TRUSTED_ORIGINS`
+
+Production settings fail safely if the secret key, allowed hosts or PostgreSQL database URL is missing.
 
 ### Frontend
 
@@ -67,13 +50,14 @@ Do not commit real credentials or secret keys.
 
 ### Backend on Render
 
-Create a **Web Service** using the repository:
+The root `render.yaml` defines the KoraCart API service. Create a Blueprint from this repository or configure a Web Service manually:
+
 - Root directory: `backend`
-- Build command: `./build.sh`
+- Build command: `bash build.sh`
 - Start command: `gunicorn config.wsgi:application`
 - Health check path: `/api/health/`
 
-Set the backend environment variables from `backend/.env.example`. Use the Neon pooled connection string for normal application traffic. Ensure SSL is enabled in the Neon connection string.
+Set the unsynchronised environment variables in Render. Use the Neon pooled connection string for normal application traffic and ensure SSL is enabled.
 
 ### Frontend on Cloudflare Pages
 
@@ -87,7 +71,7 @@ Cloudflare Pages builds the React application on each push to the connected bran
 
 ### GitHub Actions
 
-The included workflow runs frontend build validation and backend Django system checks on pushes and pull requests. The frontend build does not require local Node.js installation.
+The included workflow runs frontend build validation and backend Django system checks on pushes and pull requests. Dependencies are installed in GitHub-hosted runners; local Node.js and Python installations are not required for deployment.
 
 ## Initial admin account
 

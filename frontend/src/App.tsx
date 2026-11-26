@@ -17,12 +17,12 @@ import {
 import { getApiHealth } from './lib/api'
 
 const categories = [
-  { name: 'Electronics', icon: '◈', count: 'Explore collection' },
-  { name: 'Fashion', icon: '✳', count: 'Explore collection' },
-  { name: 'Home & Living', icon: '⌂', count: 'Explore collection' },
-  { name: 'Beauty', icon: '✦', count: 'Explore collection' },
-  { name: 'Phones & Tablets', icon: '▣', count: 'Explore collection' },
-  { name: 'Sports & Fitness', icon: '◎', count: 'Explore collection' },
+  { name: 'Electronics', icon: '◈', count: '2,400+ items' },
+  { name: 'Fashion', icon: '✳', count: '5,800+ items' },
+  { name: 'Home & Living', icon: '⌂', count: '1,200+ items' },
+  { name: 'Beauty', icon: '✦', count: '980+ items' },
+  { name: 'Phones & Tablets', icon: '▣', count: '1,600+ items' },
+  { name: 'Sports & Fitness', icon: '◎', count: '740+ items' },
 ]
 
 const products = [

@@ -1,17 +1,28 @@
 import os
 from pathlib import Path
+
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-development-key-change-before-deploy")
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "development-only-key-do-not-use-in-production"
+    else:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be configured in production.")
 
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if host.strip()
 ]
+
+if not DEBUG and not os.environ.get("DJANGO_ALLOWED_HOSTS"):
+    raise ImproperlyConfigured("DJANGO_ALLOWED_HOSTS must be configured in production.")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -63,17 +74,19 @@ if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0 if "-pooler" in DATABASE_URL else 600,
             ssl_require=True,
         )
     }
-else:
+elif DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+else:
+    raise ImproperlyConfigured("DATABASE_URL must point to the Neon PostgreSQL database.")
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
